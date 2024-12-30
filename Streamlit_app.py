@@ -1,8 +1,8 @@
 import streamlit as st
-import pickle
 import numpy as np
+import pickle
+import xgboost as xgb
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 
 # Streamlit UI
 st.title("Mulitiple Disease Prediction")
