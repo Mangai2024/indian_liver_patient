@@ -5,23 +5,22 @@ import xgboost as xgb
 import pandas as pd
 
 # Streamlit UI
-st.title("Mulitiple Disease Prediction")
+st.title("Multiple Disease Prediction")
 
 # Sidebar for disease selection
 nav = st.sidebar.radio("Select Multiple Disease Prediction", ["Parkinson's Disease", "Kidney Disease", "Liver Disease"])
 
 if nav == "Parkinson's Disease":
-    st.header("Parkinson's Multiple Disease Prediction")
+    st.header("Parkinson's Disease Prediction")
     
     # Load the Parkinson's model
     try:
-        parkinson_model = pickle.load(open(r'XGBparkinsons.pkl', 'wb'))
+        parkinson_model = pickle.load(open(r'E:\MINI_PROJECTS_STREAMLIT\XGBparkinsons.pkl', 'rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop()
 
-    
-# Input fields for Parkinson's disease prediction
+    # Input fields for Parkinson's disease prediction
     MDVP_Fo_Hz = st.number_input("Fundamental Frequency (MDVP:Fo(Hz))", min_value=0.0, value=0.0)
     MDVP_Fhi_Hz = st.number_input("Maximum Frequency (MDVP:Fhi(Hz))", min_value=0.0, value=0.0)
     MDVP_Flo_Hz = st.number_input("Minimum Frequency (MDVP:Flo(Hz))", min_value=0.0, value=0.0)
@@ -45,7 +44,7 @@ if nav == "Parkinson's Disease":
     D2 = st.number_input("Correlation Dimension (D2)", min_value=0.0, value=0.0)
     PPE = st.number_input("Pitch Period Entropy (PPE)", min_value=0.0, value=0.0)
 
-# Prepare input features as a 2D array for prediction
+    # Prepare input features as a 2D array for prediction
     input_features = np.array([[MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter_percent, MDVP_Jitter_Abs,
                                  MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer, MDVP_Shimmer_dB,
                                  Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR,
@@ -61,12 +60,13 @@ if nav == "Parkinson's Disease":
                 st.success("The model predicts that the individual does not have Parkinson's disease.")
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
-
+            
+            
 elif nav == "Kidney Disease":
     st.header("Kidney Disease Prediction")
     # Load the kidney model
     try:
-        kidney_model = pickle.load(open(r'GNBkidney.pkl', 'wb'))
+        kidney_model = pickle.load(open(r'E:\MINI_PROJECTS_STREAMLIT\GNBkidney.pkl', 'rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop() 
@@ -123,18 +123,47 @@ elif nav == "Kidney Disease":
                 st.success("The model predicts that the individual does not have Kidney disease.")
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
+            
+            
+elif nav == "Liver Disease":
+    st.header("Liver Disease Prediction")
 
+    # Load the liver's model
+    try:
+        liver_model = pickle.load(open('XGBLiver.pkl', 'rb'))
+    except FileNotFoundError:
+        st.error("Model file not found. Please check the file path.")
+        st.stop()    
 
+    # Define input fields for Liver disease prediction
+    
+    Age= st.number_input("Age", min_value=1, max_value=120, value=30)
+    Gender = st.selectbox("Gender", [1.0, 0.0], format_func=lambda x: "Male" if x == 1.0 else "Female")
+    Total_Bilirubin= st.number_input("Total Bilirubin", min_value=0.0, value=0.0)
+    Direct_Bilirubin= st.number_input("Direct Bilirubin", min_value=0.0, value=0.0)
+    Alkaline_Phosphotase= st.number_input("Alkaline Phosphotase", min_value=0, value=0)
+    Alamine_Aminotransferase= st.number_input("Alamine Aminotransferase", min_value=0, value=0)
+    Aspartate_Aminotransferase= st.number_input("Aspartate Aminotransferase", min_value=0, value=0)
+    Total_Proteins= st.number_input("Total Proteins", min_value=0.0, value=0.0)
+    Albumin= st.number_input("Albumin", min_value=0.0, value=0.0)
+    Albumin_and_Globulin_Ratio= st.number_input("Albumin and Globulin Ratio", min_value=0.0, value=0.0)
 
+    # Prepare input features as a 2D array for prediction
+    input_features = np.array([[Age,float(Gender),Total_Bilirubin,Direct_Bilirubin,Alkaline_Phosphotase,
+                                Alamine_Aminotransferase,Aspartate_Aminotransferase,Total_Proteins,
+                                Albumin,Albumin_and_Globulin_Ratio]]).astype(float)
+    # Cleanse string columns (if necessary)
+    for col in range(input_features.shape[1]):
+        input_features[:, col] = [str(x).encode('utf-8').decode('utf-8') if isinstance(x, str) else x for x in input_features[:, col]]
+    # Button for prediction
+    if st.button("Predict"):
+        try:
+            prediction = liver_model.predict(input_features)
+            if prediction[0] == 0:
+                st.success("The model predicts that the individual does not have Liver disease.")
+            else:
+                st.success("The model predicts that the individual has Liver disease.")
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {e}")
 
-
-
-
-
-
-
-
-
-
-
-
+st.text("Thank you for using the dashboard!")
