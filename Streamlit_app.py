@@ -129,7 +129,7 @@ elif nav == "Liver Disease":
 
     # Load the liver's model
     try:
-        liver_model = pickle.load(open('DTLiver.pkl', 'rb'))
+        liver_model = pickle.load(open('DTLiver.pkl','rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop()    
