@@ -14,7 +14,7 @@ if nav == "Parkinson's Disease":
     
     # Load the Parkinson's model
     try:
-        parkinson_model = pickle.load(open(r'E:\MINI_PROJECTS_STREAMLIT\XGBparkinsons.pkl', 'rb'))
+        parkinson_model = pickle.load(open(r'RFCparkinson.pkl', 'rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop()
@@ -65,7 +65,7 @@ elif nav == "Kidney Disease":
     st.header("Kidney Disease Prediction")
     # Load the kidney model
     try:
-        kidney_model = pickle.load(open(r'E:\MINI_PROJECTS_STREAMLIT\GNBkidney.pkl', 'rb'))
+        kidney_model = pickle.load(open(r'GNBkidney.pkl', 'rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop() 
@@ -129,7 +129,7 @@ elif nav == "Liver Disease":
 
     # Load the liver's model
     try:
-        liver_model = pickle.load(open('XGBLiver.pkl', 'rb'))
+        liver_model = pickle.load(open('DTLiver.pkl', 'rb'))
     except FileNotFoundError:
         st.error("Model file not found. Please check the file path.")
         st.stop()    
