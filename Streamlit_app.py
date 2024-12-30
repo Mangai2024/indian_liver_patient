@@ -45,6 +45,85 @@ if nav == "Parkinson's Disease":
     D2 = st.number_input("Correlation Dimension (D2)", min_value=0.0, value=0.0)
     PPE = st.number_input("Pitch Period Entropy (PPE)", min_value=0.0, value=0.0)
 
+# Prepare input features as a 2D array for prediction
+    input_features = np.array([[MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter_percent, MDVP_Jitter_Abs,
+                                 MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer, MDVP_Shimmer_dB,
+                                 Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR,
+                                 RPDE, DFA, spread1, spread2, D2, PPE]])
+
+    # Button for prediction
+    if st.button("Predict"):
+        try:
+            prediction = parkinson_model.predict(input_features)
+            if prediction[0] == 1:
+                st.success("The model predicts that the individual has Parkinson's disease.")
+            else:
+                st.success("The model predicts that the individual does not have Parkinson's disease.")
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {e}")
+
+elif nav == "Kidney Disease":
+    st.header("Kidney Disease Prediction")
+    # Load the kidney model
+    try:
+        kidney_model = pickle.load(open(r'GNBkidney.pkl', 'wb'))
+    except FileNotFoundError:
+        st.error("Model file not found. Please check the file path.")
+        st.stop() 
+    # Define input fields for Kidney disease prediction
+
+    Age = st.number_input("Age", min_value=1, max_value=120, value=30)
+    Blood_Pressure = st.number_input("Blood Pressure", min_value=1, max_value=200, value=80)
+    Specific_Gravity = st.number_input("Specific Gravity", min_value=1.0, max_value=1.03, value=1.02, format="%.2f")
+    Albumin = st.selectbox("Albumin", [0, 1, 2, 3, 4])  # Assuming Albumin is categorical (0-4)
+    Sugar = st.selectbox("Sugar", [0, 1])  # Binary (0 or 1)
+    Red_Blood_Cells = st.selectbox("Red Blood Cells", ["normal", "abnormal"])  # Categorical
+    Pus_Cell = st.selectbox("Pus Cell", ["normal", "abnormal"])  # Categorical
+    Pus_Cell_Clumps = st.selectbox("Pus Cell Clumps", ["present", "notpresent"])  # Categorical
+    Bacteria = st.selectbox("Bacteria", ["present", "notpresent"])  # Categorical
+    Blood_Glucose_Random = st.number_input("Blood Glucose Random", min_value=0.0, value=0.0)
+    Blood_Urea = st.number_input("Blood Urea", min_value=0.0, value=0.0)
+    Serum_Creatinine = st.number_input("Serum Creatinine", min_value=0.0, value=0.0)
+    Sodium = st.number_input("Sodium", min_value=0.0, value=0.0)
+    Potassium = st.number_input("Potassium", min_value=0.0, value=0.0)
+    Hemoglobin = st.number_input("Hemoglobin", min_value=0.0, value=0.0)
+    Packed_Cell_Volume = st.number_input("Packed Cell Volume", min_value=0.0, value=0.0)
+    White_Blood_Cell_Count = st.number_input("White Blood Cell Count", min_value=0.0, value=0.0)
+    Red_Blood_Cell_Count = st.number_input("Red Blood Cell Count", min_value=0.0, value=0.0)
+
+    # Categorical health conditions
+    Hypertension = st.selectbox("Hypertension", ["yes", "no"])
+    Diabetes_Mellitus = st.selectbox("Diabetes Mellitus", ["yes", "no"])
+    Coronary_Artery_Disease = st.selectbox("Coronary Artery Disease", ["yes", "no"])
+    Appetite = st.selectbox("Appetite", ["good", "poor"])
+    Pedal_Edema = st.selectbox("Pedal Edema", ["yes", "no"])
+    Anemia = st.selectbox("Anemia", ["yes", "no"])
+
+    
+    # Map Specific Gravity to encoded values (if required)
+    specific_gravity_mapping = {1.005: 0, 1.01: 1, 1.015: 2}  # Example mapping
+    Specific_Gravity = specific_gravity_mapping.get(Specific_Gravity, -1)  # Default to -1 if not mapped
+    
+    # Prepare input features as a 2D array for prediction
+    input_features = np.array([[Age,Blood_Pressure,Specific_Gravity,Albumin,Sugar,1 if Red_Blood_Cells == "abnormal" else 0,1 if Pus_Cell == "abnormal" else 0,
+                                1 if Pus_Cell_Clumps == "present" else 0,1 if Bacteria == "present" else 0,Blood_Glucose_Random,Blood_Urea,
+                                Serum_Creatinine,Sodium,Potassium,Hemoglobin,Packed_Cell_Volume,White_Blood_Cell_Count,Red_Blood_Cell_Count,
+                                1 if Hypertension == "yes" else 0,1 if Diabetes_Mellitus == "yes" else 0,1 if Coronary_Artery_Disease == "yes" else 0,
+                                1 if Appetite == "poor" else 0,1 if Pedal_Edema == "yes" else 0,1 if Anemia == "yes" else 0]]).astype(float)
+    # Cleanse string columns (if necessary)
+    for col in range(input_features.shape[1]):
+        input_features[:, col] = [str(x).encode('utf-8').decode('utf-8') if isinstance(x, str) else x for x in input_features[:, col]]
+    # Button for prediction
+    if st.button("Predict"):
+        try:
+            prediction = kidney_model.predict(input_features)
+            if prediction[0] == 1:
+                st.success("The model predicts that the individual has Kidney disease.")
+            else:
+                st.success("The model predicts that the individual does not have Kidney disease.")
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {e}")
+
 
 
 
