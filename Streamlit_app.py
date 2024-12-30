@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import pickle
-import xgboost as xgb
 import pandas as pd
 
 # Streamlit UI
